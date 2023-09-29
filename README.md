@@ -1,5 +1,9 @@
 # rancher-system-agent
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![codecov](https://codecov.io/gh/rancher/system-agent/branch/main/graph/badge.svg?token=9TYXGQ54FM)](https://codecov.io/gh/rancher/system-agent)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rancher/system-agent)](https://goreportcard.com/report/github.com/rancher/system-agent)
+
 `rancher-system-agent` is a daemon designed to run on a system and apply "plans" to the system. `rancher-system-agent` can support both local and remote plans, and was built to be integrated with the Rancher2 project for provisioning next-generation, CAPI driven clusters.
 
 ## Building

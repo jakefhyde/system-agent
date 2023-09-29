@@ -32,7 +32,9 @@ replace (
 )
 
 require (
+	github.com/bmatcuk/doublestar/v4 v4.6.0
 	github.com/google/go-containerregistry v0.7.0
+	github.com/magefile/mage v1.15.0
 	github.com/mattn/go-colorable v0.1.11
 	github.com/rancher/lasso v0.0.0-20221227210133-6ea88ca2fbcc
 	github.com/rancher/wharfie v0.5.3

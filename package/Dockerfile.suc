@@ -1,7 +1,6 @@
 ARG BUILD_ENV=dapper
 
 FROM registry.suse.com/bci/bci-base:15.5.36.5.34 AS base
-USER 1000
 
 FROM base AS copy_kubectl
 ONBUILD ARG ARCH
@@ -9,12 +8,12 @@ ONBUILD RUN curl -L -f -o /usr/bin/kubectl https://dl.k8s.io/release/v1.24.0/bin
             chmod +x /usr/bin/kubectl
 ONBUILD RUN /usr/bin/kubectl version --client
 
-FROM base AS copy_suc
+FROM copy_kubectl AS copy_suc
+ONBUILD ARG OS
 ONBUILD COPY install.sh /opt/rancher-system-agent-suc/install.sh
 ONBUILD COPY system-agent-uninstall.sh /opt/rancher-system-agent-suc/system-agent-uninstall.sh
-ONBUILD COPY in/rancher-system-agent /opt/rancher-system-agent-suc
+ONBUILD COPY bin/rancher-system-agent-${OS} /opt/rancher-system-agent-suc
 ONBUILD COPY package/suc/run.sh /opt/rancher-system-agent-suc/run.sh
-ONBUILD COPY --from=kubectl /usr/bin/kubectl /usr/bin/
 
-FROM copy_${BUILD_ENV}
+FROM copy_suc
 CMD ["/opt/rancher-system-agent-suc/run.sh"]

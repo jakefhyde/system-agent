@@ -17,8 +17,18 @@ func (Build) All(ctx context.Context) {
 	mg.CtxDeps(ctx, Build.SystemAgent)
 }
 
+func (Build) Prepare(_ context.Context) error {
+	err := sh.RunV("mkdir", "-p", "bin")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // SystemAgent build the system agent binary.
-func (Build) SystemAgent(_ context.Context) error {
+func (Build) SystemAgent(ctx context.Context) error {
+	mg.CtxDeps(ctx, Build.Prepare)
+
 	tag, _ := os.LookupEnv("VERSION")
 	tag = strings.TrimSpace(tag)
 
@@ -35,8 +45,15 @@ func (Build) SystemAgent(_ context.Context) error {
 		"-trimpath",
 	)
 
-	args = append(args, "-o", "bin/rancher-system-agent")
+	args = append(args, "-o", "./bin/rancher-system-agent-linux") // todo: ARCH
 
 	err := sh.RunWith(map[string]string{"CGO_ENABLED": "0"}, args[0], args[1:]...)
-	return err
+	if err != nil {
+		return err
+	}
+
+	sh.Run("pwd")
+	sh.Run("ls -la ./bin")
+
+	return nil
 }

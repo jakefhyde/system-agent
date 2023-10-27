@@ -1,0 +1,6 @@
+apiVersion: k3d.io/v1alpha4 # this will change in the future as we make everything more stable
+kind: Simple # internally, we also have a Cluster config, which is not yet available externally
+kubeAPI:
+  host: "k3d-system-agent-default-server-0"
+  hostIP: "127.0.0.1"
+  hostPort: "6443"

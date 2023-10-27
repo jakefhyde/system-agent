@@ -306,11 +306,9 @@ func (b *Builder) runInTreeBuilds(ctx context.Context) error {
 			})
 
 			k8s := rancher.NewK8sInstance(ctx, b.client)
-			if err := k8s.Start(); err != nil {
+			if err := k8s.InstallRancher(); err != nil {
 				panic(err)
 			}
-
-			k8s.InstallRancher()
 		}
 
 		if err := eg.Wait(); err != nil {

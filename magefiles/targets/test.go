@@ -69,25 +69,30 @@ func (Test) E2E(ctx context.Context) error {
 	//err = sh.RunV(fmt.Sprintf(`echo "%s" > ./k3d-config.yaml`, k3dconfig))
 
 	// spin up k3d
-	err = sh.RunV("k3d", "cluster", "create",
-		"--kubeconfig-switch-context",
-		"--config", "k3dconfig.yaml",
-		//"-p", `80:80@server:0:direct`,
-		//"-p", `443:443@server:0:direct`,
-		//"--api-port", "127.0.0.1:6443",
-		//"--k3s-arg", `'--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@agent:*'`,
-		//"--k3s-arg", `'--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%@agent:*'`,
-		//"--agents", "1",
-		//"--network", "nw01",
-		"--image", "docker.io/rancher/k3s:v1.27.5-k3s1",
-		"--wait",
-		"system-agent-default")
+	//err = sh.RunV("k3d", "cluster", "create",
+	//	"--kubeconfig-switch-context",
+	//	"--config", "k3dconfig.yaml",
+	//	//"-p", `80:80@server:0:direct`,
+	//	//"-p", `443:443@server:0:direct`,
+	//	//"--api-port", "127.0.0.1:6443",
+	//	//"--k3s-arg", `'--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@agent:*'`,
+	//	//"--k3s-arg", `'--kubelet-arg=eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%@agent:*'`,
+	//	//"--agents", "1",
+	//	//"--network", "nw01",
+	//	"--image", "docker.io/rancher/k3s:v1.27.5-k3s1",
+	//	"--wait",
+	//	"system-agent-default")
+	//if err != nil {
+	//	return err
+	//}
+
+	// todo: only if containerized
+	//sh.RunV("docker", "network", "connect", "k3d-system-agent-default", os.Getenv("HOSTNAME")) //HOSTNAME is dapper container ID
+
+	err = sh.RunV("scripts/k3s.sh")
 	if err != nil {
 		return err
 	}
-
-	// todo: only if containerized
-	sh.RunV("docker", "network", "connect", "k3d-system-agent-default", os.Getenv("HOSTNAME")) //HOSTNAME is dapper container ID
 
 	maxRetries := 5
 	retryBackoff := 5 * time.Second
@@ -105,6 +110,11 @@ func (Test) E2E(ctx context.Context) error {
 		if i == maxRetries {
 			return fmt.Errorf("k8s took too long to start")
 		}
+	}
+
+	err = sh.RunV("cat", "./k3s.log")
+	if err != nil {
+		return err
 	}
 
 	err = sh.RunV("kubectl", "apply", "-f", "https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml")

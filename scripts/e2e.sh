@@ -2,6 +2,10 @@
 
 set -ex
 
+
+
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
 if [ -z "${SOME_K8S_VERSION}" ]; then
   if [ -z "${DIST}" ]; then
     export DIST="rke2"

@@ -1,6 +1,7 @@
 run:
   skip-files:
-    - "/zz_generated_"
+    - magefile.go
+    - /zz_generated
   deadline: 5m
 linters:
   disable-all: true

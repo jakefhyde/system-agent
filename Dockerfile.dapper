@@ -3,19 +3,33 @@ FROM registry.suse.com/bci/golang:1.20
 ARG DAPPER_HOST_ARCH
 ENV ARCH $DAPPER_HOST_ARCH
 
-ENV GOLANGCI_LINT_VERSION v1.53.3
+ENV GOLANGCI_LINT_VERSION v1.55.0
 
-RUN zypper -n install docker
+RUN zypper -n install docker awk jq
 
-RUN if [ "${ARCH}" == "amd64" ]; then \
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s ${GOLANGCI_LINT_VERSION}; \
-    fi
+# Install mage
+RUN go install github.com/magefile/mage@latest
+
+# Install linter
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+# Install k3d
+RUN curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+# Install kubectl
+RUN curl -L -f -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${ARCH}/kubectl" && \
+    chmod +x /usr/bin/kubectl
+
+# Install helm
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 ENV DAPPER_ENV REPO TAG DRONE_TAG CROSS
 ENV DAPPER_SOURCE /go/src/github.com/rancher/system-agent/
 ENV DAPPER_OUTPUT ./bin ./dist
 ENV DAPPER_DOCKER_SOCKET true
 ENV HOME ${DAPPER_SOURCE}
+ENV DAPPER_RUN_ARGS "--privileged"
+
 WORKDIR ${DAPPER_SOURCE}
 
 ENTRYPOINT ["./scripts/entry"]
